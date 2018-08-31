@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Олег Копытин](https://up.htmlacademy.ru/javascript/15/user/173247).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Кравчук] (https://htmlacademy.ru/profile/id807447).
 
 ---
 
