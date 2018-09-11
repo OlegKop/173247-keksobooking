@@ -197,7 +197,7 @@ var getMapCard = function (pinListCard) {
 
   return cardElement;
 };
-
+ 
 var fragmentCard = document.createDocumentFragment();
 
 fragmentCard.appendChild(getMapCard(propertyKeks[1]));
