@@ -4,8 +4,7 @@
 var userDialog = document.querySelector('.map');
 userDialog.classList.remove('map--faded');
 
-var avatarList = ['img/avatars/user01.png', 'img/avatars/user02.png', 'img/avatars/user03.png', 'img/avatars/user04.png', 'img/avatars/user05.png',
-  'img/avatars/user06.png', 'img/avatars/user07.png', 'img/avatars/user08.png'];
+var avatar = ['img/avatars/user0'];
 var titleList = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец',
   'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var checkInOut = ['12:00', '13:00', '14:00'];
@@ -14,9 +13,22 @@ var featureType = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'condi
 var photos = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
+
+// ф-ция по генерации массива для аватарок
+var getAvatarList = function (element, quantity, format) {
+  var avatars = [];
+  for (var i = 0; i < quantity; i++) {
+    var num = 1;
+    num += i;
+    var avatarElement = element + num + format;
+    avatars.push(avatarElement);
+  }
+  return avatars;
+};
+
+var avatarList = getAvatarList(avatar, 8, '.png');
 
 // определение случайного целого числа
 var randomInt = function getRandomInRange(min, max) {
@@ -29,11 +41,12 @@ var nameArr = function (arr) {
   return arrName;
 };
 
-// перемешивание массива с использованием сортировки случайным образом
-function compareRandom(_a, _b) {
+
+function compareRandom() {
   return Math.random() - 0.5;
 }
 
+// перемешивание массива с использованием сортировки случайным образом
 function mixArray(arr) {
   return arr.sort(compareRandom);
 }
@@ -56,14 +69,14 @@ var featureRand = function (arrT) {
 avatarList = mixArray(avatarList);
 titleList = mixArray(titleList);
 
-var getPropertyKeks = function (avatar, title, priceMin, priceMax, type, roomsMax,
+var getPropertyKeks = function (avatars, title, priceMin, priceMax, type, roomsMax,
     guestsMax, check, features, photo, xMin, xMax, yMin, yMax) {
   var propertyKeks = [];
   for (var i = 0; i <= 8; i++) {
     propertyKeks.push(advert);
 
     for (var j = 0; j <= i; j++) {
-      avatarList = avatar;
+      avatarList = avatars;
       titleList = title;
       var checkInOutR = nameArr(check);
       var roomTypeR = nameArr(type);
@@ -145,9 +158,9 @@ var cardTemplate = document.querySelector('#card').content.querySelector('.map__
 var mapFilters = document.querySelector('.map__filters-container');
 
 // ф-ция для определения услуг объявления
-var getFeaturs = function (featurArray, element) {
+var getFeatures = function (featureArray, element) {
   var childElement = element.querySelectorAll('li');
-  for (i = featurArray.length; i < featureType.length; i++) {
+  for (i = featureArray.length; i < featureType.length; i++) {
     element.removeChild(childElement[i]);
   }
 };
@@ -167,16 +180,20 @@ var renderPhotos = function (photodArray, element) {
 
 // ф-ция для переименования типа помещения с латиницы на русский
 var getNameRusType = function (element) {
-  if (element === 'flat') {
-    var name = 'Квартира';
-  } else if (element === 'bungalo') {
-    name = 'Бунгало';
-  } else if (element === 'house') {
-    name = 'Дом';
-  } else if (element === 'palace') {
-    name = 'Дворец';
+  switch (element) {
+    case 'flat':
+      var name = 'Квартира';
+      return name;
+    case 'bungalo':
+      name = 'Бунгало';
+      return name;
+    case 'house':
+      name = 'Дом';
+      return name;
+    default:
+      name = 'Дворец';
+      return name;
   }
-  return name;
 };
 
 var getMapCard = function (_pinListCard) {
@@ -188,7 +205,7 @@ var getMapCard = function (_pinListCard) {
   cardElement.querySelector('.popup__type').textContent = getNameRusType(propertyKeks[0].offer.type);
   cardElement.querySelector('.popup__text--capacity').textContent = propertyKeks[0].offer.rooms + ' комнаты для ' + propertyKeks[0].offer.guests + ' гостей';
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + propertyKeks[0].offer.checkin + ', выезд до ' + propertyKeks[0].offer.checkout;
-  getFeaturs(propertyKeks[0].offer.features, cardElement.querySelector('.popup__features'));
+  getFeatures(propertyKeks[0].offer.features, cardElement.querySelector('.popup__features'));
   cardElement.querySelector('.popup__description').textContent = propertyKeks[0].offer.description;
   renderPhotos(propertyKeks[0].offer.photos, cardElement.querySelector('.popup__photos'));
   cardElement.querySelector('.popup__avatar').src = propertyKeks[0].author.avatar;
