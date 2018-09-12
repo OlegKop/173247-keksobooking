@@ -183,17 +183,17 @@ var getNameRusType = function (element) {
   switch (element) {
     case 'flat':
       var name = 'Квартира';
-      return name;
+      break;
     case 'bungalo':
       name = 'Бунгало';
-      return name;
+      break;
     case 'house':
       name = 'Дом';
-      return name;
+      break;
     default:
       name = 'Дворец';
-      return name;
   }
+  return name;
 };
 
 var getMapCard = function (_pinListCard) {
