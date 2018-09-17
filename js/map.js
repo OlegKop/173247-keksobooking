@@ -231,7 +231,7 @@ var mapPins = document.querySelector('.map__pins');
 var mapPin = mapPins.querySelector('.map__pin');
 var adForm = document.querySelector('.ad-form');
 var adFormAddress = adForm.querySelector('#address');
-var IntCoord = Math.round(65/2);
+var IntCoord = Math.round(65 / 2);
 // функция для активации формы
 
 var onDeActivation = function () {
