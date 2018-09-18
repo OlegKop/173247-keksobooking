@@ -256,8 +256,13 @@ mapPin.addEventListener('mouseup', function (evt) {
 
 var cardVisible = function (evt) {
   var int = evt.target.id;
-  fragmentCard.appendChild(getMapCard(propertyKeks[int]));
-  pinListCard.insertBefore(fragmentCard, mapFilters);
+  if (int !== '') {
+    fragmentCard.appendChild(getMapCard(propertyKeks[int]));
+    pinListCard.insertBefore(fragmentCard, mapFilters);
+    if (document.querySelectorAll('.map__card').length > 1) {
+      closePopup();
+    }
+  }
 };
 
 var onCardVisible = function () {
