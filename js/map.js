@@ -255,7 +255,7 @@ mapPin.addEventListener('mouseup', function (evt) {
 // обработчик по работе с об объявлении
 
 var cardVisible = function (evt) {
-  var int = this.id;
+  var int = evt.currentTarget.id;
   if (int !== '') {
     fragmentCard.appendChild(getMapCard(propertyKeks[int]));
     pinListCard.insertBefore(fragmentCard, mapFilters);
