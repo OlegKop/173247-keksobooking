@@ -272,7 +272,7 @@ var mapBotton = 630;
 // функция для активации формы
 
 var onDeActivation = function () {
-  if (map !== document.activeElement) {
+  if (userDialog.className === 'map map--faded') {
     fieldsetDisabledEnabled(document.querySelectorAll('fieldset'), false);
     fieldsetDisabledEnabled(document.querySelectorAll('.map__filter'), false);
     userDialog.classList.remove('map--faded');
@@ -354,10 +354,12 @@ var updateCoordinte = function (evt) {
   var onMouseMove = function (moveEvt) {
     moveEvt.preventDefault();
     dragged = true;
+
     var shift = {
       x: startCoords.x - moveEvt.clientX,
       y: startCoords.y - moveEvt.clientY
     };
+
     startCoords = {
       x: moveEvt.clientX,
       y: moveEvt.clientY
@@ -369,23 +371,23 @@ var updateCoordinte = function (evt) {
       bottom: mapBotton,
       left: mapOverlay.offsetLeft
     };
-    var newLocation = {
-      x: limits.left,
-      y: limits.top
-    };
-    if (moveEvt.clientX > limits.right) {
-      newLocation.x = limits.right;
-    } else if (moveEvt.clientX > limits.left) {
-      newLocation.x = moveEvt.clientX;
+
+    var coordNewX = dialogHandler.offsetLeft - shift.x;
+    var coordNewY = dialogHandler.offsetTop - shift.y;
+
+    if (coordNewX > limits.right) {
+      coordNewX = limits.right;
+    } else if (coordNewX < limits.left) {
+      coordNewX = limits.left;
     }
-    if (moveEvt.clientY > limits.bottom) {
-      newLocation.y = limits.bottom;
-    } else if (moveEvt.clientY > limits.top) {
-      newLocation.y = moveEvt.clientY;
+    if (coordNewY > limits.bottom) {
+      coordNewY = limits.bottom;
+    } else if (coordNewY < limits.top) {
+      coordNewY = limits.top;
     }
-    dialogHandler.style.left = (newLocation.x - shift.x) + 'px';
-    dialogHandler.style.top = (newLocation.y - shift.y) + 'px';
-    adFormAddress.value = [(newLocation.x - shift.x), (newLocation.y - shift.y)];
+    dialogHandler.style.left = coordNewX + 'px';
+    dialogHandler.style.top = coordNewY + 'px';
+    adFormAddress.value = [coordNewX, coordNewX];
   };
 
   var onMouseUp = function (upEvt) {
