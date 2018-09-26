@@ -1,5 +1,4 @@
 'use strict';
-
 // удаление класса map--faded у блока map
 var userDialog = document.querySelector('.map');
 
@@ -256,7 +255,6 @@ var mapPins = document.querySelector('.map__pins');
 var mapPin = mapPins.querySelector('.map__pin');
 var adForm = document.querySelector('.ad-form');
 var adFormAddress = adForm.querySelector('#address');
-var IntCoord = Math.round(65 / 2);
 var submit = document.querySelector('.ad-form__submit');
 var reset = adForm.querySelector('.ad-form__reset');
 var typeElement = document.querySelector('#type');
@@ -266,11 +264,14 @@ var timeoutElemet = document.querySelector('#timeout');
 var roomNumber = document.querySelector('#room_number');
 var capacity = document.querySelector('#capacity');
 var dialogHandler = mapPins.querySelector('.map__pin--main');
+var mapOverlay = map.querySelector('.map__overlay');
+var mapTop = 130;
+var mapBotton = 630;
 
 // функция для активации формы
 
 var onDeActivation = function () {
-  if (map !== document.activeElement) {
+  if (userDialog.className === 'map map--faded') {
     fieldsetDisabledEnabled(document.querySelectorAll('fieldset'), false);
     fieldsetDisabledEnabled(document.querySelectorAll('.map__filter'), false);
     userDialog.classList.remove('map--faded');
@@ -291,10 +292,12 @@ var onDeActivation = function () {
   }
 };
 
-mapPin.addEventListener('mouseup', function (evt) {
+mapPin.addEventListener('mousedown', function () {
   onDeActivation();
   onCardVisible();
-  adFormAddress.value = [evt.clientX - IntCoord, evt.clientY - IntCoord];
+  if (dialogHandler !== document.activeElement) {
+    adFormAddress.value = [dialogHandler.style.left.replace('px', ''), dialogHandler.style.top.replace('px', '')];
+  }
 });
 
 // обработчик по работе с об объявлении
@@ -338,6 +341,72 @@ timeoutElemet.addEventListener('input', function (evt) {
   var target = evt.currentTarget.value;
   timeinElement.value = target;
 });
+
+var updateCoordinte = function (evt) {
+  evt.preventDefault();
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+  var dragged = false;
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+    dragged = true;
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    var limits = {
+      top: mapTop,
+      right: mapOverlay.offsetWidth - dialogHandler.offsetWidth,
+      bottom: mapBotton,
+      left: mapOverlay.offsetLeft
+    };
+
+    var coordNewX = dialogHandler.offsetLeft - shift.x;
+    var coordNewY = dialogHandler.offsetTop - shift.y;
+
+    if (coordNewX > limits.right) {
+      coordNewX = limits.right;
+    } else if (coordNewX < limits.left) {
+      coordNewX = limits.left;
+    }
+    if (coordNewY > limits.bottom) {
+      coordNewY = limits.bottom;
+    } else if (coordNewY < limits.top) {
+      coordNewY = limits.top;
+    }
+    dialogHandler.style.left = coordNewX + 'px';
+    dialogHandler.style.top = coordNewY + 'px';
+    adFormAddress.value = [coordNewX, coordNewX];
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+    if (dragged) {
+      var onClickPreventDefault = function (clickevt) {
+        clickevt.preventDefault();
+        dialogHandler.removeEventListener('click', onClickPreventDefault);
+      };
+      dialogHandler.addEventListener('click', onClickPreventDefault);
+    }
+
+  };
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+};
+
+dialogHandler.addEventListener('mousedown', updateCoordinte);
 
 roomNumber.addEventListener('input', function (evt) {
   fieldsetDisabledEnabled(capacity, false);
