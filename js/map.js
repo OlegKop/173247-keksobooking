@@ -292,7 +292,7 @@ var onDeActivation = function () {
   }
 };
 
-mapPin.addEventListener('mouseup', function () {
+mapPin.addEventListener('mousedown', function () {
   onDeActivation();
   onCardVisible();
   if (dialogHandler !== document.activeElement) {
