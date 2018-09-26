@@ -1,5 +1,4 @@
 'use strict';
-
 // удаление класса map--faded у блока map
 var userDialog = document.querySelector('.map');
 
