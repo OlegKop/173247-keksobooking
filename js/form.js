@@ -72,7 +72,7 @@
     validQuantityGuests();
   });
 
-  reset.addEventListener('click', function () {
+  var defaultForm = function () {
     adForm.classList.add('ad-form--disabled');
     userDialog.classList.add('map--faded');
     dialogHandler.style = 'left: 570px; top: 375px;';
@@ -81,5 +81,14 @@
       mapPins.removeChild(cardList[i]);
     }
     closePopup();
+  };
+  adForm.addEventListener('submit', function (evt) {
+    window.backend.sendData(new FormData(adForm), window.message.messageSuccess, window.message.messageError);
+    defaultForm();
+    adForm.reset();
+    evt.preventDefault();
   });
+
+  reset.addEventListener('click', defaultForm);
+
 })();
