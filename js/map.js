@@ -1,6 +1,6 @@
 'use strict';
 (function () {
-// удаление класса map--faded у блока map
+
   var userDialog = document.querySelector('.map');
 
   var fieldsetDisabledEnabled = function (domElement, flag) {
@@ -13,10 +13,6 @@
   fieldsetDisabledEnabled(document.querySelectorAll('fieldset'), true);
 
   fieldsetDisabledEnabled(document.querySelectorAll('.map__filter'), true);
-
-  var propertyKeks = window.data.propertyKeks;
-
-  // обработчки событий
 
   var map = document.querySelector('.map');
   var mapPins = document.querySelector('.map__pins');
@@ -35,39 +31,61 @@
   var mapFilters = document.querySelector('.map__filters-container');
   var pinListCard = document.querySelector('.map');
 
+  var pins = function (propertyKeks) {
+    for (var i = 0; i < propertyKeks.length; i++) {
+      fragment.appendChild(getMapPin(propertyKeks[i], i));
+    }
+    mapPins.appendChild(fragment);
+  };
+
+  var errorHandler = function (errorMessage) {
+    window.message.messageError(errorMessage);
+  };
   // функция для активации формы
 
   var onDeActivation = function () {
     if (userDialog.className === 'map map--faded') {
+      window.backend.getData(pins, errorHandler);
       fieldsetDisabledEnabled(document.querySelectorAll('fieldset'), false);
       fieldsetDisabledEnabled(document.querySelectorAll('.map__filter'), false);
       userDialog.classList.remove('map--faded');
       adForm.classList.remove('ad-form--disabled');
-      for (var i = 0; i < propertyKeks.length; i++) {
-        fragment.appendChild(getMapPin(propertyKeks[i], i));
-      }
-      mapPins.appendChild(fragment);
     }
   };
 
-  mapPin.addEventListener('mousedown', function () {
+  dialogHandler.addEventListener('mousedown', function () {
     onDeActivation();
-    onCardVisible();
     if (dialogHandler !== document.activeElement) {
       adFormAddress.value = [dialogHandler.style.left.replace('px', ''), dialogHandler.style.top.replace('px', '')];
     }
   });
 
+  mapPin.addEventListener('click', function () {
+    onCardVisible();
+  });
+
+  var removeActivePin = function () {
+    var buttons = mapPins.querySelectorAll('button');
+    for (var i = 0; i < buttons.length; i++) {
+      var element = buttons[i];
+      element.classList.remove('map__pin--active');
+    }
+  };
+
   // обработчик по работе с об объявлении
 
   var cardVisible = function (evt) {
+    removeActivePin();
     var int = evt.currentTarget.id;
+    document.getElementById(int).classList.add('map__pin--active');
     if (int !== '') {
-      fragment.appendChild(getMapCard(propertyKeks[int]));
-      pinListCard.insertBefore(fragment, mapFilters);
-      if (document.querySelectorAll('.map__card').length > 1) {
-        closePopup();
-      }
+      window.backend.getData(function (propertyKeks) {
+        fragment.appendChild(getMapCard(propertyKeks[int]));
+        pinListCard.insertBefore(fragment, mapFilters);
+        if (document.querySelectorAll('.map__card').length > 1) {
+          closePopup();
+        }
+      });
     }
   };
 
@@ -75,13 +93,15 @@
     var buttons = mapPins.querySelectorAll('button');
     for (var i = 0; i < buttons.length; i++) {
       var button = buttons[i];
-      button.addEventListener('click', cardVisible);
+      button.addEventListener('mousedown', cardVisible);
     }
   };
 
   var closePopup = function () {
     var mapCard = document.querySelector('.map__card');
-    mapCard.parentNode.removeChild(mapCard);
+    if (mapCard) {
+      mapCard.parentNode.removeChild(mapCard);
+    }
   };
 
   map.addEventListener('click', function (evt) {
@@ -154,9 +174,9 @@
       if (dragged) {
         var onClickPreventDefault = function (clickevt) {
           clickevt.preventDefault();
-          dialogHandler.removeEventListener('click', onClickPreventDefault);
+          dialogHandler.removeEventListener('mouseup', onClickPreventDefault);
         };
-        dialogHandler.addEventListener('click', onClickPreventDefault);
+        dialogHandler.addEventListener('mousedown', onClickPreventDefault);
       }
 
     };
@@ -171,5 +191,6 @@
     userDialog: userDialog,
     dialogHandler: dialogHandler,
     mapPins: mapPins,
-    closePopup: closePopup};
+    closePopup: closePopup
+  };
 })();

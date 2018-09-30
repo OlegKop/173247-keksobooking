@@ -2,7 +2,6 @@
 
 (function () {
 
-  var propertyKeks = window.data.propertyKeks;
   var featureType = window.data.featureType;
 
   // шаблон для объявлений
@@ -11,22 +10,35 @@
   // ф-ция для определения услуг объявления
   var getFeatures = function (featureArray, element) {
     var childElement = element.querySelectorAll('li');
-    for (var i = featureArray.length; i < featureType.length; i++) {
+    for (var i = 0; i < featureType.length; i++) {
       element.removeChild(childElement[i]);
+    }
+    for (var j = 0; j < featureArray.length; j++) {
+      var className = 'popup__feature';
+      var newElement = document.createElement('li');
+      newElement.classList.add(className);
+      var feature = 'popup__feature--' + featureArray[j];
+      newElement.classList.add(feature);
+      element.appendChild(newElement);
     }
   };
 
   // ф-ция для формирования блока с фото
   var renderPhotos = function (photodArray, element) {
-    for (var i = 0; i < photodArray.length; i++) {
-      if (i === 0) {
-        element.querySelector('img').setAttribute('src', propertyKeks[i].offer.photos[i]);
-      } else {
-        var newElement = element.querySelector('img').cloneNode(true);
-        newElement.src = propertyKeks[i].offer.photos[i];
-        element.appendChild(newElement);
+    if (photodArray.length === 0) {
+      element.querySelector('.popup__photo').classList.add('hidden');
+    } else {
+      for (var i = 0; i < photodArray.length; i++) {
+        if (i === 0) {
+          element.querySelector('img').setAttribute('src', photodArray[i]);
+        } else {
+          var newElement = element.querySelector('img').cloneNode(true);
+          newElement.src = photodArray[i];
+          element.appendChild(newElement);
+        }
       }
     }
+
   };
 
   // ф-ция для переименования типа помещения с латиницы на русский
