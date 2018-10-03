@@ -213,7 +213,7 @@
         left: mapOverlay.offsetLeft
       };
 
-      var coordNewX = moveMouseMap.x - startCoords.x + dialogCoord.x  + PIN_WIDTH;
+      var coordNewX = moveMouseMap.x - startCoords.x + dialogCoord.x + PIN_WIDTH;
       var coordNewY = moveMouseMap.y - startCoords.y + dialogCoord.y;
 
       if (coordNewX > limits.right) {
