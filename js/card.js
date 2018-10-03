@@ -1,16 +1,13 @@
 'use strict';
 
 (function () {
-
-  var featureType = window.data.featureType;
-
   // шаблон для объявлений
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
   // ф-ция для определения услуг объявления
   var getFeatures = function (featureArray, element) {
     var childElement = element.querySelectorAll('li');
-    for (var i = 0; i < featureType.length; i++) {
+    for (var i = 0; i < childElement.length; i++) {
       element.removeChild(childElement[i]);
     }
     for (var j = 0; j < featureArray.length; j++) {
@@ -59,8 +56,10 @@
     return name;
   };
 
-  var getMapCard = function (objCardDomElement) {
+  var getMapCard = function (objCardDomElement, onCloseClick) {
     var cardElement = cardTemplate.cloneNode(true);
+    cardElement.classList.add('hidden');
+    cardElement.setAttribute('id', objCardDomElement.id);
     cardElement.querySelector('.popup__title').textContent = objCardDomElement.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = objCardDomElement.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = objCardDomElement.offer.price + '₽/ночь';
@@ -71,7 +70,8 @@
     cardElement.querySelector('.popup__description').textContent = objCardDomElement.offer.description;
     renderPhotos(objCardDomElement.offer.photos, cardElement.querySelector('.popup__photos'));
     cardElement.querySelector('.popup__avatar').src = objCardDomElement.author.avatar;
-
+    var cardForEventElement = cardElement.querySelector('.popup__close');
+    cardForEventElement.addEventListener('click', onCloseClick);
     return cardElement;
   };
   window.card = {getMapCard: getMapCard};
