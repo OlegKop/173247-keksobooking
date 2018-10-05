@@ -3,7 +3,7 @@
 
 (function () {
 
-  var ESC_KEYCODE = 27;
+  var ESC_KEYCODE = window.data.ESC_KEYCODE;
   var main = document.querySelector('main');
 
   function onMessageSuccessClose(evt) {
@@ -31,7 +31,7 @@
       elementSuccess.addEventListener('click', function () {
         main.removeChild(elementSuccess);
       });
-      main.addEventListener('keydown', onMessageSuccessClose);
+      document.addEventListener('keydown', onMessageSuccessClose);
     },
     messageError: function (errMess) {
       var formError = document.querySelector('#error').content.querySelector('.error');
@@ -42,7 +42,7 @@
       elemError.addEventListener('click', function () {
         main.removeChild(elemError);
       });
-      main.addEventListener('keydown', onMessageErrorClose);
+      document.addEventListener('keydown', onMessageErrorClose);
     }
   };
 })();

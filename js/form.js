@@ -4,10 +4,10 @@
 
   var fieldsetDisabledEnabled = window.map.fieldsetDisabledEnabled;
   var adForm = window.map.adForm;
-  var userDialog = window.map.userDialog;
+  var map = window.map.map;
   var dialogHandler = window.map.dialogHandler;
   var mapPins = window.map.mapPins;
-  var closePopup = window.map.closePopup;
+  var mapFilters = window.map.mapFilters;
   var capacityArr = window.data.capacityArr;
   var submit = document.querySelector('.ad-form__submit');
   var reset = adForm.querySelector('.ad-form__reset');
@@ -15,6 +15,10 @@
   var priceElement = document.querySelector('#price');
   var roomNumber = document.querySelector('#room_number');
   var capacity = document.querySelector('#capacity');
+  var deleteElementsMap = window.map.deleteElementsMap;
+  var propertyKeksClear = window.map.propertyKeksClear;
+  var preview = window.map.preview;
+  var previewImg = preview.querySelector('img');
 
   roomNumber.addEventListener('input', function (evt) {
     fieldsetDisabledEnabled(capacity, false);
@@ -73,22 +77,31 @@
   });
 
   var defaultForm = function () {
+    mapFilters.reset();
+    adForm.reset();
     adForm.classList.add('ad-form--disabled');
-    userDialog.classList.add('map--faded');
+    map.classList.add('map--faded');
     dialogHandler.style = 'left: 570px; top: 375px;';
     var cardList = mapPins.querySelectorAll('.map__pin');
+
     for (var i = 1; i < cardList.length; i++) {
       mapPins.removeChild(cardList[i]);
     }
-    closePopup();
+    deleteElementsMap(mapPins, '.map__pin');
+    deleteElementsMap(map, '.map__card');
+    propertyKeksClear();
+    fieldsetDisabledEnabled(document.querySelectorAll('fieldset'), true);
   };
+
   adForm.addEventListener('submit', function (evt) {
     window.backend.sendData(new FormData(adForm), window.message.messageSuccess, window.message.messageError);
-    defaultForm();
     adForm.reset();
     evt.preventDefault();
+    reset.removeEventListener('click', defaultForm);
+    defaultForm();
+    previewImg.src = 'img/muffin-grey.svg';
+    defaultForm();
   });
 
   reset.addEventListener('click', defaultForm);
-
 })();
