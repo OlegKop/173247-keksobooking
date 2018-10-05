@@ -89,7 +89,9 @@
       adForm.classList.remove('ad-form--disabled');
     }
     if (dialogHandler !== document.activeElement) {
-      adFormAddress.value = [dialogHandler.style.left.replace('px', ''), dialogHandler.style.top.replace('px', '')];
+      var coordX = parseInt(dialogHandler.style.left.replace('px', ''), 10);
+      var coordY = parseInt(dialogHandler.style.top.replace('px', ''), 10);
+      adFormAddress.value = [coordX + PIN_WIDTH, coordY + PIN_HEIGTH];
     }
     dialogHandler.removeEventListener('mouseup', onDeActivation);
   };
