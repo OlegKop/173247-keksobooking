@@ -25,7 +25,6 @@
   var ENTER_KEYCODE = window.data.ENTER_KEYCODE;
   var MAP_TOP = 130;
   var MAP_BOTTON = 630;
-  var PIN_HEIGTH = 81;
   var PIN_WIDTH = Math.round(65 / 2);
   var LENGTH_ARRAY = 5;
 
@@ -89,7 +88,9 @@
       adForm.classList.remove('ad-form--disabled');
     }
     if (dialogHandler !== document.activeElement) {
-      adFormAddress.value = [dialogHandler.style.left.replace('px', ''), dialogHandler.style.top.replace('px', '')];
+      var coordX = parseInt(dialogHandler.style.left.replace('px', ''), 10);
+      var coordY = parseInt(dialogHandler.style.top.replace('px', ''), 10);
+      adFormAddress.value = [coordX + PIN_WIDTH, coordY];
     }
     dialogHandler.removeEventListener('mouseup', onDeActivation);
   };
@@ -213,7 +214,7 @@
         left: mapOverlay.offsetLeft
       };
 
-      var coordNewX = moveMouseMap.x - startCoords.x + dialogCoord.x + PIN_WIDTH;
+      var coordNewX = moveMouseMap.x - startCoords.x + dialogCoord.x;
       var coordNewY = moveMouseMap.y - startCoords.y + dialogCoord.y;
 
       if (coordNewX > limits.right) {
@@ -235,7 +236,7 @@
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
       var coordNewX = dialogHandler.offsetLeft;
-      var coordNewY = dialogHandler.offsetTop + PIN_HEIGTH;
+      var coordNewY = dialogHandler.offsetTop;
       adFormAddress.value = [coordNewX, coordNewY];
       onDeActivation();
     };
