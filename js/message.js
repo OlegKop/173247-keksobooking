@@ -1,24 +1,27 @@
-
 'use strict';
 
 (function () {
 
-  var ESC_KEYCODE = window.data.ESC_KEYCODE;
+  var ESC_KEYCODE = window.constant.ESC_KEYCODE;
   var main = document.querySelector('main');
 
   function onMessageSuccessClose(evt) {
     if (evt.keyCode === ESC_KEYCODE) {
       var elemSucc = main.querySelector('.success');
-      main.removeChild(elemSucc);
-      main.removeEventListener('keydown', onMessageSuccessClose);
+      if (elemSucc !== null) {
+        main.removeChild(elemSucc);
+      }
+      main.removeEventListener('keyup', onMessageSuccessClose);
     }
   }
 
   function onMessageErrorClose(evt) {
     if (evt.keyCode === ESC_KEYCODE) {
       var elemError = main.querySelector('.error');
-      main.removeChild(elemError);
-      main.removeEventListener('keydown', onMessageSuccessClose);
+      if (elemError !== null) {
+        main.removeChild(elemError);
+      }
+      main.removeEventListener('keydown', onMessageErrorClose);
     }
   }
 

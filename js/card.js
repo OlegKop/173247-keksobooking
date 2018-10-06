@@ -35,7 +35,6 @@
         }
       }
     }
-
   };
 
   // ф-ция для переименования типа помещения с латиницы на русский
@@ -56,23 +55,24 @@
     return name;
   };
 
-  var getMapCard = function (objCardDomElement, onCloseClick) {
-    var cardElement = cardTemplate.cloneNode(true);
-    cardElement.classList.add('hidden');
-    cardElement.setAttribute('id', objCardDomElement.id);
-    cardElement.querySelector('.popup__title').textContent = objCardDomElement.offer.title;
-    cardElement.querySelector('.popup__text--address').textContent = objCardDomElement.offer.address;
-    cardElement.querySelector('.popup__text--price').textContent = objCardDomElement.offer.price + '₽/ночь';
-    cardElement.querySelector('.popup__type').textContent = getNameRusType(objCardDomElement.offer.type);
-    cardElement.querySelector('.popup__text--capacity').textContent = objCardDomElement.offer.rooms + ' комнаты для ' + objCardDomElement.offer.guests + ' гостей';
-    cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + objCardDomElement.offer.checkin + ', выезд до ' + objCardDomElement.offer.checkout;
-    getFeatures(objCardDomElement.offer.features, cardElement.querySelector('.popup__features'));
-    cardElement.querySelector('.popup__description').textContent = objCardDomElement.offer.description;
-    renderPhotos(objCardDomElement.offer.photos, cardElement.querySelector('.popup__photos'));
-    cardElement.querySelector('.popup__avatar').src = objCardDomElement.author.avatar;
-    var cardForEventElement = cardElement.querySelector('.popup__close');
-    cardForEventElement.addEventListener('click', onCloseClick);
-    return cardElement;
+  window.card = {
+    getMapCard: function (objCardDomElement, onCloseClick) {
+      var cardElement = cardTemplate.cloneNode(true);
+      cardElement.classList.add('hidden');
+      cardElement.setAttribute('id', objCardDomElement.id);
+      cardElement.querySelector('.popup__title').textContent = objCardDomElement.offer.title;
+      cardElement.querySelector('.popup__text--address').textContent = objCardDomElement.offer.address;
+      cardElement.querySelector('.popup__text--price').textContent = objCardDomElement.offer.price + '₽/ночь';
+      cardElement.querySelector('.popup__type').textContent = getNameRusType(objCardDomElement.offer.type);
+      cardElement.querySelector('.popup__text--capacity').textContent = objCardDomElement.offer.rooms + ' комнаты для ' + objCardDomElement.offer.guests + ' гостей';
+      cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + objCardDomElement.offer.checkin + ', выезд до ' + objCardDomElement.offer.checkout;
+      getFeatures(objCardDomElement.offer.features, cardElement.querySelector('.popup__features'));
+      cardElement.querySelector('.popup__description').textContent = objCardDomElement.offer.description;
+      renderPhotos(objCardDomElement.offer.photos, cardElement.querySelector('.popup__photos'));
+      cardElement.querySelector('.popup__avatar').src = objCardDomElement.author.avatar;
+      var cardForEventElement = cardElement.querySelector('.popup__close');
+      cardForEventElement.addEventListener('click', onCloseClick);
+      return cardElement;
+    }
   };
-  window.card = {getMapCard: getMapCard};
 })();

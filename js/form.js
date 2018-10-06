@@ -2,13 +2,13 @@
 
 (function () {
 
-  var fieldsetDisabledEnabled = window.map.fieldsetDisabledEnabled;
+  var setDisabledEnabled = window.map.setDisabledEnabled;
   var adForm = window.map.adForm;
   var map = window.map.map;
-  var dialogHandler = window.map.dialogHandler;
+  var mapPinMain = window.map.mapPinMain;
   var mapPins = window.map.mapPins;
   var mapFilters = window.map.mapFilters;
-  var capacityArr = window.data.capacityArr;
+  var capacityArr = window.constant.capacityArr;
   var submit = document.querySelector('.ad-form__submit');
   var reset = adForm.querySelector('.ad-form__reset');
   var typeElement = document.querySelector('#type');
@@ -21,7 +21,7 @@
   var previewImg = preview.querySelector('img');
 
   roomNumber.addEventListener('input', function (evt) {
-    fieldsetDisabledEnabled(capacity, false);
+    setDisabledEnabled(capacity, false);
     var roomNum = evt.currentTarget.value;
     var arrCapacity = capacityArr[roomNum];
     for (var i = 0; i < arrCapacity.length; i++) {
@@ -35,18 +35,14 @@
   var getTypeMinPrice = function (element) {
     switch (element) {
       case 'flat':
-        var price = 1000;
-        break;
+        return 1000;
       case 'bungalo':
-        price = '0';
-        break;
+        return 0;
       case 'house':
-        price = 5000;
-        break;
+        return 5000;
       default:
-        price = 10000;
+        return 10000;
     }
-    return price;
   };
 
   // ф-ция проверяет соотвествие кол-ва комнат кол-ву гостей
@@ -76,12 +72,12 @@
     validQuantityGuests();
   });
 
-  var defaultForm = function () {
+  var resetForm = function () {
     mapFilters.reset();
     adForm.reset();
     adForm.classList.add('ad-form--disabled');
     map.classList.add('map--faded');
-    dialogHandler.style = 'left: 570px; top: 375px;';
+    mapPinMain.style = 'left: 570px; top: 375px;';
     var cardList = mapPins.querySelectorAll('.map__pin');
 
     for (var i = 1; i < cardList.length; i++) {
@@ -90,18 +86,18 @@
     deleteElementsMap(mapPins, '.map__pin');
     deleteElementsMap(map, '.map__card');
     propertyKeksClear();
-    fieldsetDisabledEnabled(document.querySelectorAll('fieldset'), true);
+    setDisabledEnabled(document.querySelectorAll('fieldset'), true);
   };
 
   adForm.addEventListener('submit', function (evt) {
     window.backend.sendData(new FormData(adForm), window.message.messageSuccess, window.message.messageError);
     adForm.reset();
     evt.preventDefault();
-    reset.removeEventListener('click', defaultForm);
-    defaultForm();
+    reset.removeEventListener('click', resetForm);
+    resetForm();
     previewImg.src = 'img/muffin-grey.svg';
-    defaultForm();
+    resetForm();
   });
 
-  reset.addEventListener('click', defaultForm);
+  reset.addEventListener('click', resetForm);
 })();

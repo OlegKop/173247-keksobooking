@@ -1,6 +1,11 @@
 'use strict';
 (function () {
-
+  var ESC_KEYCODE = window.constant.ESC_KEYCODE;
+  var ENTER_KEYCODE = window.constant.ENTER_KEYCODE;
+  var MAP_TOP = 130;
+  var MAP_BOTTON = 630;
+  var PIN_WIDTH = Math.round(65 / 2);
+  var LENGTH_ARRAY = 5;
   var map = document.querySelector('.map');
   var mapPins = document.querySelector('.map__pins');
   var mapPin = mapPins.querySelector('.map__pin');
@@ -8,7 +13,7 @@
   var adFormAddress = adForm.querySelector('#address');
   var timeinElement = document.querySelector('#timein');
   var timeoutElemet = document.querySelector('#timeout');
-  var dialogHandler = mapPins.querySelector('.map__pin--main');
+  var mapPinMain = mapPins.querySelector('.map__pin--main');
   var mapOverlay = map.querySelector('.map__overlay');
   var fragment = document.createDocumentFragment();
   var getMapPin = window.pin.getMapPin;
@@ -21,26 +26,19 @@
   var formUpload = document.querySelector('.ad-form__upload input[type=file]');
   var formPhoto = document.querySelector('.ad-form__photo');
 
-  var ESC_KEYCODE = window.data.ESC_KEYCODE;
-  var ENTER_KEYCODE = window.data.ENTER_KEYCODE;
-  var MAP_TOP = 130;
-  var MAP_BOTTON = 630;
-  var PIN_WIDTH = Math.round(65 / 2);
-  var LENGTH_ARRAY = 5;
-
-  var fieldsetDisabledEnabled = function (domElement, flag) {
+  var setDisabledEnabled = function (domElement, flag) {
     for (var i = 0; i < domElement.length; i++) {
       var element = domElement[i];
       element.disabled = flag;
     }
   };
 
-  fieldsetDisabledEnabled(document.querySelectorAll('fieldset'), true);
+  setDisabledEnabled(document.querySelectorAll('fieldset'), true);
 
-  fieldsetDisabledEnabled(document.querySelectorAll('.map__filter'), true);
+  setDisabledEnabled(document.querySelectorAll('.map__filter'), true);
 
   // ф-ция загрузки меток объявлений
-  var pins = function (countPins, mask) {
+  var createPins = function (countPins, mask) {
     deleteElementsMap(mapPins, '.map__pin');
     deleteElementsMap(map, '.map__card');
     for (var i = 0; i < countPins; i++) {
@@ -52,7 +50,7 @@
   };
 
   // ф-ция загрузки карточек объявлений
-  var cards = function (countCard, maskS) {
+  var createCards = function (countCard, maskS) {
     var fragmentCard = document.createDocumentFragment();
     for (var i = 0; i < countCard; i++) {
       if (propertyKeks[i].rank === maskS || propertyKeks[i].rank === null) {
@@ -63,36 +61,35 @@
     pinListCard.insertBefore(fragmentCard, mapFiltersContainer);
   };
 
-  var errorHandler = function (errorMessage) {
+  var onError = function (errorMessage) {
     window.message.messageError(errorMessage);
   };
 
   var propertyKeks = [];
-  var successHandler = function (data) {
+  var onSuccess = function (data) {
     for (var i = 0; i < data.length; i++) {
       propertyKeks.push(data[i]);
       propertyKeks[i].id = i;
       propertyKeks[i].rank = null;
     }
-    pins(LENGTH_ARRAY);
-    cards(LENGTH_ARRAY);
-    return propertyKeks;
+    createPins(LENGTH_ARRAY);
+    createCards(LENGTH_ARRAY);
   };
 
   var onDeActivation = function () {
     if (map.className === 'map map--faded') {
-      window.backend.getData(successHandler, errorHandler);
-      fieldsetDisabledEnabled(document.querySelectorAll('fieldset'), false);
-      fieldsetDisabledEnabled(document.querySelectorAll('.map__filter'), false);
+      window.backend.getData(onSuccess, onError);
+      setDisabledEnabled(document.querySelectorAll('fieldset'), false);
+      setDisabledEnabled(document.querySelectorAll('.map__filter'), false);
       map.classList.remove('map--faded');
       adForm.classList.remove('ad-form--disabled');
     }
-    if (dialogHandler !== document.activeElement) {
-      var coordX = parseInt(dialogHandler.style.left.replace('px', ''), 10);
-      var coordY = parseInt(dialogHandler.style.top.replace('px', ''), 10);
+    if (mapPinMain !== document.activeElement) {
+      var coordX = parseInt(mapPinMain.style.left.replace('px', ''), 10);
+      var coordY = parseInt(mapPinMain.style.top.replace('px', ''), 10);
       adFormAddress.value = [coordX + PIN_WIDTH, coordY];
     }
-    dialogHandler.removeEventListener('mouseup', onDeActivation);
+    mapPinMain.removeEventListener('mouseup', onDeActivation);
   };
 
   var removeActivePin = function () {
@@ -101,9 +98,8 @@
       var element = buttons[i];
       element.classList.remove('map__pin--active');
     }
-    var card = document.querySelector('.map__card');
-    if (card) {
-      var mapCard = document.querySelectorAll('.map__card');
+    var mapCard = document.querySelectorAll('.map__card');
+    if (mapCard) {
       for (i = 0; i < mapCard.length; i++) {
         element = mapCard[i];
         element.classList.add('hidden');
@@ -113,13 +109,13 @@
 
   mapPin.addEventListener('mosedown', function (evt) {
     removeActivePin();
-    var int = evt.currentTarget.id;
-    if (int !== '') {
-      mapPin.getElementById(int).classList.add('map__pin--active');
+    var id = evt.currentTarget.id;
+    if (id !== '') {
+      mapPin.getElementById(id).classList.add('map__pin--active');
       var mapCard = document.querySelectorAll('.map__card');
       for (var i = 0; i < mapCard.length; i++) {
         var elemArticle = mapCard[i];
-        if (elemArticle.getAttribute('id') === int) {
+        if (elemArticle.getAttribute('id') === id) {
           elemArticle.classList.remove('hidden');
         }
       }
@@ -179,7 +175,6 @@
     var target = evt.currentTarget.value;
     timeoutElemet.value = target;
   });
-
   timeoutElemet.addEventListener('input', function (evt) {
     var target = evt.currentTarget.value;
     timeinElement.value = target;
@@ -187,15 +182,15 @@
 
   // событие на перемещие главной метки
 
-  dialogHandler.addEventListener('mousedown', function (evt) {
+  mapPinMain.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
     var startCoords = {
       x: evt.clientX,
       y: evt.clientY
     };
     var dialogCoord = {
-      x: dialogHandler.offsetLeft,
-      y: dialogHandler.offsetTop
+      x: mapPinMain.offsetLeft,
+      y: mapPinMain.offsetTop
     };
     var dragged = false;
 
@@ -209,7 +204,7 @@
 
       var limits = {
         top: MAP_TOP,
-        right: mapOverlay.offsetWidth - dialogHandler.offsetWidth,
+        right: mapOverlay.offsetWidth - mapPinMain.offsetWidth,
         bottom: MAP_BOTTON,
         left: mapOverlay.offsetLeft
       };
@@ -227,25 +222,25 @@
       } else if (coordNewY < limits.top) {
         coordNewY = limits.top;
       }
-      dialogHandler.style.left = coordNewX + 'px';
-      dialogHandler.style.top = coordNewY + 'px';
+      mapPinMain.style.left = coordNewX + 'px';
+      mapPinMain.style.top = coordNewY + 'px';
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
-      var coordNewX = dialogHandler.offsetLeft;
-      var coordNewY = dialogHandler.offsetTop;
+      var coordNewX = mapPinMain.offsetLeft;
+      var coordNewY = mapPinMain.offsetTop;
       adFormAddress.value = [coordNewX, coordNewY];
       onDeActivation();
     };
     if (dragged) {
       var onClickPreventDefault = function (evtDr) {
         evtDr.preventDefault();
-        dialogHandler.removeEventListener('click', onClickPreventDefault);
+        mapPinMain.removeEventListener('click', onClickPreventDefault);
       };
-      dialogHandler.addEventListener('click', onClickPreventDefault);
+      mapPinMain.addEventListener('click', onClickPreventDefault);
     }
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
@@ -349,10 +344,8 @@
   var compareNamesForSort = function (leftName, rightName) {
     if (leftName > rightName) {
       return 1;
-    } else if (leftName < rightName) {
-      return -1;
     } else {
-      return 0;
+      return -1;
     }
   };
 
@@ -439,8 +432,8 @@
     onCardVisible(null);
     var takeNumber = propertyKeks.length > LENGTH_ARRAY ? LENGTH_ARRAY : propertyKeks.length;
     var sMask = sumMask(filterPropertyKeks);
-    pins(takeNumber, sMask);
-    cards(takeNumber, sMask);
+    createPins(takeNumber, sMask);
+    createCards(takeNumber, sMask);
     propertyKeks.forEach(function (objArr) {
       objArr.rank = 0;
     });
@@ -452,9 +445,9 @@
   };
 
   window.map = {adForm: adForm,
-    fieldsetDisabledEnabled: fieldsetDisabledEnabled,
+    setDisabledEnabled: setDisabledEnabled,
     map: map,
-    dialogHandler: dialogHandler,
+    mapPinMain: mapPinMain,
     mapPins: mapPins,
     closePopup: closePopup,
     deleteElementsMap: deleteElementsMap,
