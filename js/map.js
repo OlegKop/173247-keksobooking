@@ -25,7 +25,6 @@
   var ENTER_KEYCODE = window.data.ENTER_KEYCODE;
   var MAP_TOP = 130;
   var MAP_BOTTON = 630;
-  var PIN_HEIGTH = 81;
   var PIN_WIDTH = Math.round(65 / 2);
   var LENGTH_ARRAY = 5;
 
@@ -91,7 +90,7 @@
     if (dialogHandler !== document.activeElement) {
       var coordX = parseInt(dialogHandler.style.left.replace('px', ''), 10);
       var coordY = parseInt(dialogHandler.style.top.replace('px', ''), 10);
-      adFormAddress.value = [coordX + PIN_WIDTH, coordY + PIN_HEIGTH];
+      adFormAddress.value = [coordX + PIN_WIDTH, coordY];
     }
     dialogHandler.removeEventListener('mouseup', onDeActivation);
   };
@@ -237,7 +236,7 @@
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
       var coordNewX = dialogHandler.offsetLeft;
-      var coordNewY = dialogHandler.offsetTop + PIN_HEIGTH;
+      var coordNewY = dialogHandler.offsetTop;
       adFormAddress.value = [coordNewX, coordNewY];
       onDeActivation();
     };
