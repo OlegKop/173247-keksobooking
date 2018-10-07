@@ -17,5 +17,4 @@
   };
 
   window.pin = {getMapPin: getMapPin};
-
 })();
